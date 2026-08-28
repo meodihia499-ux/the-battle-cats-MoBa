@@ -1,8 +1,3 @@
-Dưới đây là toàn bộ mã nguồn `index.html` đã được cập nhật bộ phím chiêu thức sang **`1`, `2`, `3`, `4**` (hỗ trợ cả phím số hàng trên lẫn bàn phím Numpad side).
-
-Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`** trên GitHub:
-
-```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -295,7 +290,7 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             x: 250, y: 1750, radius: 16, color: '#00d2ff', speed: 4.2,
             hp: 450, maxHp: 450, shield: 0,
             gold: 300, level: 1, exp: 0, nextExp: 100,
-            atkRange: 130, atkDmg: 35,
+            atkRange: 140, atkDmg: 40, atkCooldown: 0,
             redBuffTimer: 0, blueBuffTimer: 0,
             skills: {
                 '1': { cd: 0, maxCd: 3 },
@@ -305,14 +300,15 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             }
         };
 
+        // Danh sách trụ MLBB với Giáp Vàng (Gold Shield 5 phút đầu) & Tầm đánh chuẩn
         let redTurrets = [
-            { x: 250, y: 700, hp: 500, maxHp: 500, r: 22 },
-            { x: 250, y: 350, hp: 500, maxHp: 500, r: 22 },
-            { x: 1000, y: 1000, hp: 500, maxHp: 500, r: 22 },
-            { x: 1300, y: 700, hp: 500, maxHp: 500, r: 22 },
-            { x: 1300, y: 1750, hp: 500, maxHp: 500, r: 22 },
-            { x: 1650, y: 1750, hp: 500, maxHp: 500, r: 22 },
-            { x: 1750, y: 250, hp: 1000, maxHp: 1000, r: 32, isNexus: true }
+            { id: 1, x: 250, y: 700, hp: 650, maxHp: 650, r: 24, range: 210, tier: 1, goldShield: 350, maxGoldShield: 350, target: null, attackCd: 0, heat: 1 },
+            { id: 2, x: 250, y: 350, hp: 800, maxHp: 800, r: 24, range: 210, tier: 2, goldShield: 0, maxGoldShield: 0, target: null, attackCd: 0, heat: 1 },
+            { id: 3, x: 1000, y: 1000, hp: 650, maxHp: 650, r: 24, range: 210, tier: 1, goldShield: 350, maxGoldShield: 350, target: null, attackCd: 0, heat: 1 },
+            { id: 4, x: 1300, y: 700, hp: 800, maxHp: 800, r: 24, range: 210, tier: 2, goldShield: 0, maxGoldShield: 0, target: null, attackCd: 0, heat: 1 },
+            { id: 5, x: 1300, y: 1750, hp: 650, maxHp: 650, r: 24, range: 210, tier: 1, goldShield: 350, maxGoldShield: 350, target: null, attackCd: 0, heat: 1 },
+            { id: 6, x: 1650, y: 1750, hp: 800, maxHp: 800, r: 24, range: 210, tier: 2, goldShield: 0, maxGoldShield: 0, target: null, attackCd: 0, heat: 1 },
+            { id: 7, x: 1750, y: 250, hp: 1400, maxHp: 1400, r: 34, range: 240, tier: 3, isNexus: true, goldShield: 0, maxGoldShield: 0, target: null, attackCd: 0, heat: 1 }
         ];
 
         let jungleMonsters = [
@@ -352,8 +348,8 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 let angle = Math.atan2(worldMouseY - player.y, worldMouseX - player.x);
                 projectiles.push({
                     x: player.x, y: player.y,
-                    vx: Math.cos(angle) * 9, vy: Math.sin(angle) * 9,
-                    r: 9, color: '#00ffff', dmg: 85 + (player.level * 10), range: 450, dist: 0
+                    vx: Math.cos(angle) * 10, vy: Math.sin(angle) * 10,
+                    r: 9, color: '#00ffff', dmg: 90 + (player.level * 12), range: 450, dist: 0, isPlayer: true
                 });
                 player.skills['1'].cd = player.skills['1'].maxCd * cdr;
                 addParticles(player.x, player.y, '#00ffff', 8);
@@ -368,9 +364,9 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 addParticles(player.x, player.y, '#38ef7d', 14);
             }
             else if ((key === '3' || code === 'Digit3' || code === 'Numpad3') && player.skills['3'].cd <= 0) {
-                player.hp = Math.min(player.maxHp, player.hp + 120);
-                player.shield += 80;
-                addFloatText(player.x, player.y - 15, '+120 HP', '#2ed573');
+                player.hp = Math.min(player.maxHp, player.hp + 130);
+                player.shield += 90;
+                addFloatText(player.x, player.y - 15, '+130 HP', '#2ed573');
                 player.skills['3'].cd = player.skills['3'].maxCd * cdr;
                 addParticles(player.x, player.y, '#2ed573', 15);
             }
@@ -378,8 +374,8 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 addParticles(player.x, player.y, '#ffa500', 40);
                 let targets = [...redMinions, ...redTurrets, ...jungleMonsters];
                 targets.forEach(t => {
-                    if (t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) < 220) {
-                        damageTarget(t, 180 + (player.level * 20));
+                    if (t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) < 230) {
+                        damageTarget(t, 200 + (player.level * 22), true);
                         if (t.type) triggerAgro(t, player);
                     }
                 });
@@ -394,16 +390,60 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             }
         }
 
-        function damageTarget(target, dmg) {
+        // Cơ chế gây sát thương MLBB (Khiên giáp trụ, thưởng giáp vàng, sát thương lính)
+        function damageTarget(target, dmg, isFromPlayer = false) {
             let actualDmg = dmg;
-            if (player.redBuffTimer > 0) {
+            if (isFromPlayer && player.redBuffTimer > 0) {
                 actualDmg += 20;
-                addFloatText(target.x, target.y - 10, '+20 Burn', '#ff4757');
+                addFloatText(target.x, target.y - 10, '+20 Bùa Đỏ', '#ff4757');
             }
+
+            // Cơ chế MLBB: Trụ có giáp chống đẩy lén (Backdoor Protection)
+            if (target.range && !target.isNexus) {
+                let hasMinionInRange = blueMinions.some(m => Math.hypot(m.x - target.x, m.y - target.y) <= target.range);
+                if (!hasMinionInRange && (!alliedLord || Math.hypot(alliedLord.x - target.x, alliedLord.y - target.y) > target.range)) {
+                    actualDmg *= 0.35; // Giảm 65% sát thương khi không có lính đẩy cùng
+                    addFloatText(target.x, target.y - 15, 'KHIÊN CHỐNG ĐẨY LÉN!', '#aaa');
+                }
+
+                // Cơ chế MLBB: Giáp vàng 5 phút đầu (Gold Shield)
+                if (gameTime < 300 && target.goldShield > 0) {
+                    actualDmg *= 0.5; // Giảm 50% sát thương vào giáp vàng
+                    target.goldShield -= actualDmg;
+                    if (isFromPlayer) {
+                        let goldEarned = Math.floor(actualDmg * 0.7);
+                        player.gold += goldEarned;
+                        addFloatText(player.x, player.y - 20, `+${goldEarned}G GIÁP VÀNG`, '#ffd700');
+                    }
+                    if (target.goldShield < 0) target.goldShield = 0;
+                }
+
+                // Trụ bị người chơi tấn công -> Kích hoạt Trụ tự vệ phản công người chơi nếu đứng gần
+                if (isFromPlayer) {
+                    redTurrets.forEach(tur => {
+                        if (tur.hp > 0 && Math.hypot(player.x - tur.x, player.y - tur.y) <= tur.range) {
+                            tur.target = player; // Chuyển nộ Trụ sang người chơi lập tức!
+                        }
+                    });
+                }
+            }
+
             target.hp -= actualDmg;
-            addFloatText(target.x, target.y, `-${Math.round(actualDmg)}`, '#ffffff');
+            addFloatText(target.x, target.y, `-${Math.round(actualDmg)}`, isFromPlayer ? '#ffffff' : '#f5cd79');
+
+            // Thưởng Last-Hit Lính MLBB
+            if (target.hp <= 0 && isFromPlayer) {
+                if (target.isMinion) {
+                    let bonusGold = Math.floor(target.goldValue * 0.5);
+                    player.gold += target.goldValue + bonusGold;
+                    player.exp += target.expValue;
+                    addFloatText(target.x, target.y - 10, `+${target.goldValue + bonusGold}G (LAST HIT!)`, '#ffd700');
+                    checkLevelUp();
+                }
+            }
         }
 
+        // Tạo đợt lính MLBB chuẩn (Cận chiến, Xạ thủ, Xe pháo / Lính siêu cấp)
         function spawnWave() {
             const paths = [
                 { target: {x: 250, y: 250}, final: {x: 1750, y: 250} },
@@ -411,14 +451,35 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 { target: {x: 1750, y: 1750}, final: {x: 1750, y: 250} }
             ];
 
-            paths.forEach(p => {
-                blueMinions.push({
-                    x: 250, y: 1750, hp: 150, maxHp: 150, r: 8, color: '#38ef7d', speed: 1.8,
-                    target: p.target, finalTarget: p.final, isBlue: true
-                });
-                redMinions.push({
-                    x: 1750, y: 250, hp: 150, maxHp: 150, r: 8, color: '#ff4757', speed: 1.8,
-                    target: p.target, finalTarget: {x: 250, y: 1750}, isBlue: false
+            paths.forEach((p, idx) => {
+                let hasSuperMinion = redTurrets.filter(t => t.hp <= 0).length >= 2;
+
+                // Cấu trúc đợt lính MLBB: 1 Lính Khiên (Melee), 1 Lính Phép/Xạ thủ (Ranged), 1 Xe Pháo (Siege)
+                const waveConfig = [
+                    { type: 'melee', hp: 280, atk: 18, range: 35, speed: 1.8, r: 10, color: '#38ef7d', gold: 35, exp: 25 },
+                    { type: 'ranged', hp: 160, atk: 28, range: 130, speed: 1.8, r: 8, color: '#00d2ff', gold: 30, exp: 20 },
+                    hasSuperMinion ? 
+                    { type: 'super', hp: 800, atk: 65, range: 45, speed: 1.5, r: 15, color: '#a855f7', gold: 75, exp: 60 } :
+                    { type: 'siege', hp: 450, atk: 45, range: 150, speed: 1.6, r: 13, color: '#f5cd79', gold: 60, exp: 45 }
+                ];
+
+                waveConfig.forEach((cfg, offset) => {
+                    setTimeout(() => {
+                        // Lính Xanh
+                        blueMinions.push({
+                            x: 250 + (offset * 12), y: 1750 - (offset * 12),
+                            hp: cfg.hp, maxHp: cfg.hp, r: cfg.r, color: cfg.color, speed: cfg.speed,
+                            atk: cfg.atk, range: cfg.range, type: cfg.type, isBlue: true, isMinion: true,
+                            goldValue: cfg.gold, expValue: cfg.exp, target: p.target, finalTarget: p.final, attackCd: 0
+                        });
+                        // Lính Đỏ
+                        redMinions.push({
+                            x: 1750 - (offset * 12), y: 250 + (offset * 12),
+                            hp: cfg.hp, maxHp: cfg.hp, r: cfg.r, color: '#ff4757', speed: cfg.speed,
+                            atk: cfg.atk, range: cfg.range, type: cfg.type, isBlue: false, isMinion: true,
+                            goldValue: cfg.gold, expValue: cfg.exp, target: p.target, finalTarget: {x: 250, y: 1750}, attackCd: 0
+                        });
+                    }, offset * 400);
                 });
             });
         }
@@ -435,8 +496,8 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             m.state = 'dead';
             m.respawnTimer = 60;
 
-            player.gold += 60;
-            player.exp += 45;
+            player.gold += 65;
+            player.exp += 50;
             checkLevelUp();
 
             if (m.type === 'redBuff') {
@@ -452,7 +513,7 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             } else if (m.type === 'lord') {
                 triggerAnnouncement('ĐỘI BẠN ĐÃ TIÊU DIỆT LORD!');
                 alliedLord = {
-                    x: 250, y: 1750, hp: 2000, maxHp: 2000, r: 26, color: '#a855f7', speed: 1.4,
+                    x: 250, y: 1750, hp: 2400, maxHp: 2400, r: 26, color: '#a855f7', speed: 1.4,
                     target: {x: 1000, y: 1000}, finalTarget: {x: 1750, y: 250}
                 };
             }
@@ -464,9 +525,9 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 player.level++;
                 player.exp -= player.nextExp;
                 player.nextExp = Math.floor(player.nextExp * 1.4);
-                player.maxHp += 60;
+                player.maxHp += 70;
                 player.hp = player.maxHp;
-                player.atkDmg += 10;
+                player.atkDmg += 12;
                 addFloatText(player.x, player.y - 25, 'LEVEL UP!', '#00d2ff');
             }
         }
@@ -515,13 +576,14 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                     if (boss) {
                         boss.type = 'lord';
                         boss.color = '#a855f7';
-                        boss.hp = boss.maxHp = 2500;
+                        boss.hp = boss.maxHp = 2600;
                         triggerAnnouncement('LORD ĐÃ XUẤT HIỆN!');
                     }
                 }
                 updateUI();
             }
 
+            // Di chuyển
             if (keys['KeyW'] || keys['ArrowUp']) player.y -= player.speed;
             if (keys['KeyS'] || keys['ArrowDown']) player.y += player.speed;
             if (keys['KeyA'] || keys['ArrowLeft']) player.x -= player.speed;
@@ -533,19 +595,19 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             camX = Math.max(0, Math.min(MAP_W - canvas.width, player.x - canvas.width / 2));
             camY = Math.max(0, Math.min(MAP_H - canvas.height, player.y - canvas.height / 2));
 
-            if (keys['Space']) {
+            // Đánh thường (Space)
+            if (player.atkCooldown > 0) player.atkCooldown -= 1/60;
+            if (keys['Space'] && player.atkCooldown <= 0) {
                 let targets = [...redMinions, ...redTurrets, ...jungleMonsters].filter(t => t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) <= player.atkRange);
                 if (targets.length > 0) {
                     let closest = targets.reduce((p, c) => Math.hypot(c.x - player.x, c.y - player.y) < Math.hypot(p.x - player.x, p.y - player.y) ? c : p);
-                    damageTarget(closest, player.atkDmg * 0.1);
+                    damageTarget(closest, player.atkDmg, true);
+                    player.atkCooldown = 0.4;
                     if (closest.type) triggerAgro(closest, player);
-                    if (closest.hp <= 0) {
-                        if (closest.type) killJungleMonster(closest);
-                        else { player.gold += 35; player.exp += 20; killCount++; updateUI(); }
-                    }
                 }
             }
 
+            // Hồi chiêu 1-4
             ['1', '2', '3', '4'].forEach(k => {
                 if (player.skills[k].cd > 0) {
                     player.skills[k].cd -= 1/60;
@@ -560,8 +622,10 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             });
 
-            if (frameCount % 650 === 0) spawnWave();
+            // Ra lính mỗi 30 giây (1800 frames)
+            if (frameCount % 1800 === 0 || frameCount === 1) spawnWave();
 
+            // Xử lý Quái rừng
             jungleMonsters.forEach(m => {
                 if (m.state === 'dead') {
                     m.respawnTimer -= 1/60;
@@ -604,17 +668,38 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             });
 
+            // Xử lý Lính 2 bên (AI Lính MLBB)
             [blueMinions, redMinions].forEach((team, isRed) => {
                 team.forEach(m => {
                     if (m.hp <= 0) return;
+                    if (m.attackCd > 0) m.attackCd -= 1/60;
+
                     let enemies = isRed ? [...blueMinions, player] : [...redMinions, ...redTurrets];
                     if (alliedLord && isRed) enemies.push(alliedLord);
 
-                    let nearby = enemies.filter(e => e.hp > 0 && Math.hypot(e.x - m.x, e.y - m.y) < 80);
-                    if (nearby.length > 0) {
-                        nearby[0].hp -= 0.5;
-                        if (nearby[0] === player && player.hp <= 0) endGame(false);
+                    // Tìm kẻ địch trong tầm đánh
+                    let targetsInRange = enemies.filter(e => e.hp > 0 && Math.hypot(e.x - m.x, e.y - m.y) <= m.range);
+
+                    if (targetsInRange.length > 0) {
+                        let target = targetsInRange[0];
+                        if (m.attackCd <= 0) {
+                            if (m.type === 'ranged' || m.type === 'siege') {
+                                // Lính bắn xa bắn đạn
+                                projectiles.push({
+                                    x: m.x, y: m.y,
+                                    vx: Math.cos(Math.atan2(target.y - m.y, target.x - m.x)) * 6,
+                                    vy: Math.sin(Math.atan2(target.y - m.y, target.x - m.x)) * 6,
+                                    r: 4, color: isRed ? '#ff4757' : '#00ffff', dmg: m.atk, range: m.range + 40, dist: 0, targetUnit: target
+                                });
+                            } else {
+                                // Lính cận chiến chém trực tiếp
+                                damageTarget(target, m.atk, false);
+                                if (target === player && player.hp <= 0) endGame(false);
+                            }
+                            m.attackCd = 1.0;
+                        }
                     } else {
+                        // Di chuyển theo tuyến đường
                         let dist = Math.hypot(m.target.x - m.x, m.target.y - m.y);
                         let curr = dist < 30 ? m.finalTarget : m.target;
                         let angle = Math.atan2(curr.y - m.y, curr.x - m.x);
@@ -624,10 +709,11 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 });
             });
 
+            // Xử lý Lord đồng minh
             if (alliedLord && alliedLord.hp > 0) {
-                let targets = [...redMinions, ...redTurrets].filter(e => e.hp > 0 && Math.hypot(e.x - alliedLord.x, e.y - alliedLord.y) < 120);
+                let targets = [...redMinions, ...redTurrets].filter(e => e.hp > 0 && Math.hypot(e.x - alliedLord.x, e.y - alliedLord.y) <= 130);
                 if (targets.length > 0) {
-                    targets[0].hp -= 2.5;
+                    damageTarget(targets[0], 3.0, false);
                 } else {
                     let dist = Math.hypot(alliedLord.target.x - alliedLord.x, alliedLord.target.y - alliedLord.y);
                     let curr = dist < 40 ? alliedLord.finalTarget : alliedLord.target;
@@ -637,32 +723,75 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             }
 
-            redTurrets.forEach(s => {
-                if (s.hp <= 0) return;
-                let targets = [...blueMinions, player].filter(u => u.hp > 0 && Math.hypot(u.x - s.x, u.y - s.y) < 160);
-                if (alliedLord && Math.hypot(alliedLord.x - s.x, alliedLord.y - s.y) < 160) targets.unshift(alliedLord);
+            // Xử lý Bắn & Ưu tiên mục tiêu của Trụ Đỏ (Cơ chế MLBB)
+            redTurrets.forEach(tur => {
+                if (tur.hp <= 0) return;
+                if (tur.attackCd > 0) tur.attackCd -= 1/60;
 
-                if (targets.length > 0) {
-                    let target = targets[0];
-                    if (target === player && player.shield > 0) player.shield -= 1.5;
-                    else target.hp -= 1.5;
-                    if (target === player && player.hp <= 0) endGame(false);
+                // Tìm mục tiêu trong tầm đánh trụ: Lính Xanh > Lord > Người chơi
+                let validTargets = [...blueMinions, player].filter(u => u.hp > 0 && Math.hypot(u.x - tur.x, u.y - tur.y) <= tur.range);
+                if (alliedLord && Math.hypot(alliedLord.x - tur.x, alliedLord.y - tur.y) <= tur.range) validTargets.unshift(alliedLord);
+
+                if (validTargets.length > 0) {
+                    // Nếu chưa có mục tiêu hoặc mục tiêu cũ ra khỏi tầm -> Chọn mục tiêu mới (Ưu tiên Lính trước Player)
+                    if (!tur.target || tur.target.hp <= 0 || Math.hypot(tur.target.x - tur.x, tur.target.y - tur.y) > tur.range) {
+                        tur.target = validTargets[0];
+                        tur.heat = 1; // Reset nộ sát thương tăng dần
+                    }
+
+                    if (tur.attackCd <= 0 && tur.target) {
+                        let target = tur.target;
+                        let turretDmg = 90 * tur.heat;
+
+                        projectiles.push({
+                            x: tur.x, y: tur.y,
+                            vx: Math.cos(Math.atan2(target.y - tur.y, target.x - tur.x)) * 8,
+                            vy: Math.sin(Math.atan2(target.y - tur.y, target.x - tur.x)) * 8,
+                            r: 7, color: '#ff2ed0', dmg: turretDmg, range: tur.range + 50, dist: 0, targetUnit: target, isTurretShot: true
+                        });
+
+                        // Nếu bắn vào người chơi, tăng nhiệt sát thương phát sau (Sát thương tăng dần MLBB)
+                        if (target === player) {
+                            tur.heat = Math.min(2.5, tur.heat + 0.25);
+                        }
+
+                        tur.attackCd = 1.2; // Tốc độ bắn của Trụ MLBB
+                    }
+                } else {
+                    tur.target = null;
+                    tur.heat = 1;
                 }
             });
 
             let nexus = redTurrets.find(s => s.isNexus);
             if (nexus && nexus.hp <= 0) endGame(true);
 
+            // Xử lý đạn bay
             projectiles.forEach(p => {
                 p.x += p.vx; p.y += p.vy; p.dist += Math.hypot(p.vx, p.vy);
-                [...redMinions, ...redTurrets, ...jungleMonsters].forEach(t => {
-                    if (t.hp > 0 && Math.hypot(t.x - p.x, t.y - p.y) < (t.r || 15) + p.r) {
-                        damageTarget(t, p.dmg);
-                        if (t.type) triggerAgro(t, player);
+                
+                if (p.isPlayer) {
+                    [...redMinions, ...redTurrets, ...jungleMonsters].forEach(t => {
+                        if (t.hp > 0 && Math.hypot(t.x - p.x, t.y - p.y) < (t.r || 15) + p.r) {
+                            damageTarget(t, p.dmg, true);
+                            if (t.type) triggerAgro(t, player);
+                            p.dist = 9999;
+                            if (t.hp <= 0 && t.type) killJungleMonster(t);
+                        }
+                    });
+                } else if (p.targetUnit) {
+                    if (Math.hypot(p.targetUnit.x - p.x, p.targetUnit.y - p.y) < (p.targetUnit.r || 12) + p.r) {
+                        if (p.targetUnit === player) {
+                            if (player.shield > 0) player.shield -= p.dmg;
+                            else player.hp -= p.dmg;
+                            addFloatText(player.x, player.y, `-${Math.round(p.dmg)}`, '#ff4757');
+                            if (player.hp <= 0) endGame(false);
+                        } else {
+                            damageTarget(p.targetUnit, p.dmg, false);
+                        }
                         p.dist = 9999;
-                        if (t.hp <= 0 && t.type) killJungleMonster(t);
                     }
-                });
+                }
             });
             projectiles = projectiles.filter(p => p.dist < p.range);
 
@@ -696,6 +825,7 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawMap();
 
+            // Vẽ Quái rừng
             jungleMonsters.forEach(m => {
                 if (m.state !== 'dead') {
                     ctx.beginPath();
@@ -708,24 +838,45 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             });
 
+            // Vẽ Trụ Đỏ & Tầm Trụ & Giáp Vàng MLBB
             redTurrets.forEach(s => {
                 if (s.hp > 0) {
+                    // Vẽ Tầm đánh Trụ
+                    ctx.beginPath();
+                    ctx.arc(s.x - camX, s.y - camY, s.range, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255, 71, 87, 0.15)'; ctx.lineWidth = 2; ctx.stroke();
+
+                    // Thân Trụ
                     ctx.beginPath();
                     ctx.arc(s.x - camX, s.y - camY, s.r, 0, Math.PI * 2);
                     ctx.fillStyle = s.isNexus ? '#ff2056' : '#e15f41'; ctx.fill();
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5; ctx.stroke();
 
-                    ctx.fillStyle = '#000'; ctx.fillRect(s.x - camX - 22, s.y - camY - s.r - 12, 44, 6);
-                    ctx.fillStyle = '#ff4757'; ctx.fillRect(s.x - camX - 22, s.y - camY - s.r - 12, (s.hp / s.maxHp) * 44, 6);
+                    // Thanh Máu Trụ
+                    ctx.fillStyle = '#000'; ctx.fillRect(s.x - camX - 24, s.y - camY - s.r - 14, 48, 6);
+                    ctx.fillStyle = '#ff4757'; ctx.fillRect(s.x - camX - 24, s.y - camY - s.r - 14, (s.hp / s.maxHp) * 48, 6);
+
+                    // Thanh Giáp Vàng (Gold Shield 5 phút đầu)
+                    if (gameTime < 300 && s.goldShield > 0) {
+                        ctx.fillStyle = '#ffd700';
+                        ctx.fillRect(s.x - camX - 24, s.y - camY - s.r - 20, (s.goldShield / s.maxGoldShield) * 48, 4);
+                    }
                 }
             });
 
+            // Vẽ Lính
             [...blueMinions, ...redMinions].forEach(m => {
                 ctx.beginPath();
                 ctx.arc(m.x - camX, m.y - camY, m.r, 0, Math.PI * 2);
                 ctx.fillStyle = m.color; ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+
+                // Thanh máu lính
+                ctx.fillStyle = '#000'; ctx.fillRect(m.x - camX - 12, m.y - camY - m.r - 7, 24, 3);
+                ctx.fillStyle = m.isBlue ? '#38ef7d' : '#ff4757'; ctx.fillRect(m.x - camX - 12, m.y - camY - m.r - 7, (m.hp / m.maxHp) * 24, 3);
             });
 
+            // Vẽ Lord
             if (alliedLord && alliedLord.hp > 0) {
                 ctx.beginPath();
                 ctx.arc(alliedLord.x - camX, alliedLord.y - camY, alliedLord.r, 0, Math.PI * 2);
@@ -733,12 +884,14 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
             }
 
+            // Vẽ Đạn
             projectiles.forEach(p => {
                 ctx.beginPath();
                 ctx.arc(p.x - camX, p.y - camY, p.r, 0, Math.PI * 2);
                 ctx.fillStyle = p.color; ctx.fill();
             });
 
+            // Vẽ Người chơi
             if (player.hp > 0) {
                 if (player.redBuffTimer > 0) {
                     ctx.beginPath(); ctx.arc(player.x - camX, player.y - camY, player.radius + 6, 0, Math.PI * 2);
@@ -761,6 +914,7 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             }
 
+            // Hạt hiệu ứng & chữ sát thương
             particles.forEach(pt => {
                 ctx.beginPath(); ctx.arc(pt.x - camX, pt.y - camY, pt.r, 0, Math.PI * 2);
                 ctx.fillStyle = pt.color; ctx.fill();
@@ -798,6 +952,13 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
                 }
             });
 
+            blueMinions.forEach(m => {
+                miniCtx.fillStyle = '#00ffff'; miniCtx.fillRect(m.x * scale - 1, m.y * scale - 1, 2, 2);
+            });
+            redMinions.forEach(m => {
+                miniCtx.fillStyle = '#ff4757'; miniCtx.fillRect(m.x * scale - 1, m.y * scale - 1, 2, 2);
+            });
+
             miniCtx.fillStyle = '#00d2ff';
             miniCtx.beginPath(); miniCtx.arc(player.x * scale, player.y * scale, 4, 0, Math.PI * 2); miniCtx.fill();
 
@@ -822,17 +983,14 @@ Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`**
             document.getElementById('endModal').style.display = 'none';
             isGameOver = false; killCount = 0; gameTime = 0;
             player.x = 250; player.y = 1750; player.hp = player.maxHp; player.gold = 300;
-            redTurrets.forEach(s => s.hp = s.maxHp);
+            redTurrets.forEach(s => { s.hp = s.maxHp; s.goldShield = s.maxGoldShield; s.target = null; });
             jungleMonsters.forEach(m => { m.hp = m.maxHp; m.state = 'idle'; });
             blueMinions = []; redMinions = []; alliedLord = null;
             spawnWave(); updateUI();
         }
 
-        spawnWave();
         function loop() { update(); draw(); requestAnimationFrame(loop); }
         loop();
     </script>
 </body>
 </html>
-
-```
