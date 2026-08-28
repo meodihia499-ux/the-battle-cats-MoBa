@@ -1,22 +1,28 @@
+Dưới đây là toàn bộ mã nguồn `index.html` đã được cập nhật bộ phím chiêu thức sang **`1`, `2`, `3`, `4**` (hỗ trợ cả phím số hàng trên lẫn bàn phím Numpad side).
+
+Bạn chỉ cần sao chép và dán đè toàn bộ vào tệp **`index.html`** trên GitHub:
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chrono Arena - Web MOBA 2D</title>
+    <title>The Battle Cats - MLBB Web MOBA</title>
     <style>
         :root {
-            --bg-dark: #0b0f19;
-            --panel-bg: rgba(18, 26, 43, 0.85);
+            --bg-dark: #070a12;
+            --panel-bg: rgba(15, 23, 42, 0.9);
             --accent-blue: #00d2ff;
             --accent-red: #ff4757;
             --accent-gold: #ffa500;
-            --text-light: #f1f2f6;
+            --accent-purple: #a855f7;
+            --text-light: #f8fafc;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             display: flex;
@@ -27,30 +33,23 @@
             overflow: hidden;
         }
 
-        /* Web Layout Header */
         header {
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             background: var(--panel-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 12px 24px;
-            margin-bottom: 12px;
+            padding: 10px 20px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
         .brand h1 {
-            font-size: 20px;
-            background: linear-gradient(45deg, var(--accent-blue), #9b59b6);
+            font-size: 18px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
@@ -59,58 +58,91 @@
 
         .stats-bar {
             display: flex;
-            gap: 20px;
-            font-size: 14px;
+            gap: 15px;
+            font-size: 13px;
             font-weight: 600;
         }
 
         .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.4);
+            padding: 4px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
-        /* Main Game Screen */
         .game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 890px;
+            height: 580px;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0, 210, 255, 0.15), 0 0 100px rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(0, 210, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2), 0 0 80px rgba(0, 0, 0, 0.9);
+            border: 2px solid rgba(0, 210, 255, 0.4);
         }
 
         canvas {
             width: 100%;
             height: 100%;
             display: block;
-            background: #1b381e;
+            background: #142817;
             cursor: crosshair;
         }
 
-        /* HUD Overlays */
+        .minimap-box {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 150px;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        .buff-bar {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .buff-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+            display: none;
+        }
+        .buff-red { background: #ff4757; border-color: #ffa500; }
+        .buff-blue { background: #00d2ff; border-color: #38ef7d; }
+        .buff-turtle { background: #eccc68; color: #000; border-color: #fff; }
+
         .hud-overlay {
             position: absolute;
             bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: var(--panel-bg);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(8px);
         }
 
         .skill-box {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             background: #1a2235;
             border: 2px solid var(--accent-blue);
             border-radius: 10px;
@@ -120,36 +152,48 @@
             justify-content: center;
             position: relative;
             font-weight: bold;
-            font-size: 12px;
-            box-shadow: inset 0 0 10px rgba(0,210,255,0.2);
+            font-size: 11px;
         }
 
         .skill-key {
             position: absolute;
             top: 2px;
             left: 4px;
-            font-size: 10px;
+            font-size: 11px;
             color: var(--accent-gold);
         }
 
         .cooldown-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.75);
+            background: rgba(0,0,0,0.8);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             display: none;
         }
 
-        /* Overlay Game Over / Victory */
+        .announcement {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 10px #000, 0 0 20px #ff4500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
         .modal {
             position: absolute;
             inset: 0;
-            background: rgba(10, 15, 25, 0.9);
+            background: rgba(10, 15, 25, 0.92);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -157,156 +201,139 @@
             z-index: 10;
         }
 
-        .modal h2 {
-            font-size: 42px;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
+        .modal h2 { font-size: 40px; margin-bottom: 10px; }
         .modal.victory h2 { color: var(--accent-blue); text-shadow: 0 0 20px var(--accent-blue); }
         .modal.defeat h2 { color: var(--accent-red); text-shadow: 0 0 20px var(--accent-red); }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-blue), #0072ff);
-            color: #fff;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0,210,255,0.4);
+            color: #fff; border: none; padding: 10px 26px; font-size: 15px;
+            font-weight: bold; border-radius: 20px; cursor: pointer; margin-top: 15px;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,210,255,0.6);
-        }
-
-        /* Controls Instructions */
         .controls-panel {
-            margin-top: 12px;
-            display: flex;
-            gap: 20px;
-            font-size: 13px;
-            color: #a0aec0;
+            margin-top: 8px; display: flex; gap: 15px; font-size: 12px; color: #a0aec0;
         }
-        .key-badge {
-            background: #2d3748;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #4a5568;
-            font-weight: bold;
-        }
+        .key-badge { background: #2d3748; color: #fff; padding: 1px 5px; border-radius: 3px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand">
-            <h1>Chrono Arena 2D</h1>
+            <h1>The Battle Cats MLBB</h1>
         </div>
         <div class="stats-bar">
-            <div class="stat-item" style="color: var(--accent-gold);">
-                💰 <span id="goldVal">300</span> Gold
-            </div>
-            <div class="stat-item" style="color: #2ed573;">
-                ⭐ Lv.<span id="levelVal">1</span> (<span id="expVal">0</span>/100 XP)
-            </div>
-            <div class="stat-item" style="color: var(--accent-red);">
-                ⚔️ Kills: <span id="killVal">0</span>
-            </div>
+            <div class="stat-item" style="color: #60a5fa;">⏱️ <span id="timeVal">00:00</span></div>
+            <div class="stat-item" style="color: var(--accent-gold);">💰 <span id="goldVal">300</span> G</div>
+            <div class="stat-item" style="color: #2ed573;">⭐ Lv.<span id="levelVal">1</span></div>
+            <div class="stat-item" style="color: var(--accent-red);">⚔️ Mạng: <span id="killVal">0</span></div>
         </div>
     </header>
 
     <div class="game-container">
-        <canvas id="mobaCanvas" width="800" height="600"></canvas>
+        <canvas id="mobaCanvas" width="890" height="580"></canvas>
+
+        <div class="minimap-box">
+            <canvas id="minimapCanvas" width="150" height="150"></canvas>
+        </div>
+
+        <div class="buff-bar">
+            <div class="buff-icon buff-red" id="buffRedIcon">RED<br><span id="redTimer">60</span>s</div>
+            <div class="buff-icon buff-blue" id="buffBlueIcon">BLUE<br><span id="blueTimer">60</span>s</div>
+            <div class="buff-icon buff-turtle" id="buffTurtleIcon">GIÁP<br>RÙA</div>
+        </div>
+
+        <div class="announcement" id="announceBox">TIÊU DIỆT LORD!</div>
 
         <div class="hud-overlay">
             <div class="skill-box">
-                <span class="skill-key">Q</span>
-                <span>Chưởng</span>
-                <div class="cooldown-overlay" id="cd-Q">0</div>
+                <span class="skill-key">1</span><span>Chưởng</span>
+                <div class="cooldown-overlay" id="cd-1">0</div>
             </div>
             <div class="skill-box">
-                <span class="skill-key">W</span>
-                <span>Lướt</span>
-                <div class="cooldown-overlay" id="cd-W">0</div>
+                <span class="skill-key">2</span><span>Lướt</span>
+                <div class="cooldown-overlay" id="cd-2">0</div>
             </div>
             <div class="skill-box">
-                <span class="skill-key">E</span>
-                <span>Hồi Máu</span>
-                <div class="cooldown-overlay" id="cd-E">0</div>
+                <span class="skill-key">3</span><span>Hồi Máu</span>
+                <div class="cooldown-overlay" id="cd-3">0</div>
             </div>
             <div class="skill-box" style="border-color: var(--accent-gold);">
-                <span class="skill-key">R</span>
-                <span>Bão Điện</span>
-                <div class="cooldown-overlay" id="cd-R">0</div>
+                <span class="skill-key">4</span><span>Bão Điện</span>
+                <div class="cooldown-overlay" id="cd-4">0</div>
             </div>
         </div>
 
         <div id="endModal" class="modal" style="display: none;">
             <h2 id="modalTitle">VICTORY!</h2>
-            <p id="modalDesc" style="color: #cbd5e0;">Bạn đã phá huỷ thành công Nhà Chính đối phương!</p>
+            <p id="modalDesc">Bạn đã đập tan Căn Cứ Địch!</p>
             <button class="btn" onclick="restartGame()">Chơi Lại</button>
         </div>
     </div>
 
     <div class="controls-panel">
-        <div>Di chuyển: <span class="key-badge">W</span><span class="key-badge">A</span><span class="key-badge">S</span><span class="key-badge">D</span> hoặc <span class="key-badge">Mũi tên</span></div>
-        <div>Đánh thường: <span class="key-badge">Space</span> (Đánh mục tiêu gần nhất)</div>
-        <div>Kỹ năng: <span class="key-badge">Q</span> Định hướng | <span class="key-badge">W</span> Lướt | <span class="key-badge">E</span> Giáp/Máu | <span class="key-badge">R</span> Chiêu cuối</div>
+        <div>Di chuyển: <span class="key-badge">WASD</span> | Đánh thường: <span class="key-badge">Space</span></div>
+        <div>Chiêu thức: <span class="key-badge">1</span> Đạn định hướng | <span class="key-badge">2</span> Tốc biến | <span class="key-badge">3</span> Giáp/Máu | <span class="key-badge">4</span> Chiêu cuối</div>
     </div>
 
     <script>
         const canvas = document.getElementById('mobaCanvas');
         const ctx = canvas.getContext('2d');
+        const miniCanvas = document.getElementById('minimapCanvas');
+        const miniCtx = miniCanvas.getContext('2d');
 
-        // Game State
+        const MAP_W = 2000, MAP_H = 2000;
+        let camX = 0, camY = 0;
+
         let isGameOver = false;
         let killCount = 0;
+        let gameTime = 0;
         let mouseX = 0, mouseY = 0;
 
-        // Player Champion
         const player = {
-            x: 100, y: 500, radius: 14, color: '#00d2ff', speed: 3.8,
-            hp: 350, maxHp: 350, mp: 150, maxMp: 150,
+            x: 250, y: 1750, radius: 16, color: '#00d2ff', speed: 4.2,
+            hp: 450, maxHp: 450, shield: 0,
             gold: 300, level: 1, exp: 0, nextExp: 100,
-            atkRange: 110, atkDmg: 25,
+            atkRange: 130, atkDmg: 35,
+            redBuffTimer: 0, blueBuffTimer: 0,
             skills: {
-                Q: { cd: 0, maxCd: 3, cost: 30 },
-                W: { cd: 0, maxCd: 5, cost: 20 },
-                E: { cd: 0, maxCd: 8, cost: 40 },
-                R: { cd: 0, maxCd: 12, cost: 60 }
+                '1': { cd: 0, maxCd: 3 },
+                '2': { cd: 0, maxCd: 5 },
+                '3': { cd: 0, maxCd: 8 },
+                '4': { cd: 0, maxCd: 12 }
             }
         };
 
-        // Red Team Turrets & Base Nexus
-        let redStructures = [
-            { id: 'top', x: 120, y: 120, hp: 450, maxHp: 450, r: 20, isNexus: false },
-            { id: 'mid', x: 400, y: 300, hp: 450, maxHp: 450, r: 20, isNexus: false },
-            { id: 'bot', x: 680, y: 480, hp: 450, maxHp: 450, r: 20, isNexus: false },
-            { id: 'nexus', x: 700, y: 100, hp: 800, maxHp: 800, r: 28, isNexus: true }
+        let redTurrets = [
+            { x: 250, y: 700, hp: 500, maxHp: 500, r: 22 },
+            { x: 250, y: 350, hp: 500, maxHp: 500, r: 22 },
+            { x: 1000, y: 1000, hp: 500, maxHp: 500, r: 22 },
+            { x: 1300, y: 700, hp: 500, maxHp: 500, r: 22 },
+            { x: 1300, y: 1750, hp: 500, maxHp: 500, r: 22 },
+            { x: 1650, y: 1750, hp: 500, maxHp: 500, r: 22 },
+            { x: 1750, y: 250, hp: 1000, maxHp: 1000, r: 32, isNexus: true }
         ];
 
-        // Blue Team Base
-        let blueNexus = { x: 100, y: 500, hp: 800, maxHp: 800, r: 28 };
+        let jungleMonsters = [
+            { id: 'b_blue', homeX: 450, homeY: 1350, x: 450, y: 1350, r: 20, hp: 600, maxHp: 600, type: 'blueBuff', color: '#00d2ff', leashR: 200, state: 'idle', target: null },
+            { id: 'b_red',  homeX: 750, homeY: 1650, x: 750, y: 1650, r: 20, hp: 600, maxHp: 600, type: 'redBuff', color: '#ff4757', leashR: 200, state: 'idle', target: null },
+            { id: 'r_blue', homeX: 1550, homeY: 650, x: 1550, y: 650, r: 20, hp: 600, maxHp: 600, type: 'blueBuff', color: '#00d2ff', leashR: 200, state: 'idle', target: null },
+            { id: 'r_red',  homeX: 1250, homeY: 350, x: 1250, y: 350, r: 20, hp: 600, maxHp: 600, type: 'redBuff', color: '#ff4757', leashR: 200, state: 'idle', target: null },
+            { id: 'boss', homeX: 650, homeY: 650, x: 650, y: 650, r: 28, hp: 1200, maxHp: 1200, type: 'turtle', color: '#eccc68', leashR: 220, state: 'idle', target: null }
+        ];
 
-        // Entities arrays
         let blueMinions = [];
         let redMinions = [];
+        let alliedLord = null;
         let projectiles = [];
         let particles = [];
         let floatTexts = [];
 
-        // Keyboard & Mouse inputs
         const keys = {};
-        window.addEventListener('keydown', e => {
-            keys[e.code] = true;
-            handleSkill(e.code);
+        window.addEventListener('keydown', e => { 
+            keys[e.code] = true; 
+            handleSkill(e.code, e.key); 
         });
         window.addEventListener('keyup', e => keys[e.code] = false);
         canvas.addEventListener('mousemove', e => {
@@ -315,102 +342,121 @@
             mouseY = e.clientY - rect.top;
         });
 
-        // Skill triggers
-        function handleSkill(code) {
+        function handleSkill(code, key) {
             if (isGameOver) return;
+            let worldMouseX = mouseX + camX;
+            let worldMouseY = mouseY + camY;
+            let cdr = player.blueBuffTimer > 0 ? 0.7 : 1.0;
 
-            if (code === 'KeyQ' && player.skills.Q.cd <= 0) {
-                // Skill Q: Fireball skillshot towards mouse
-                let angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            if ((key === '1' || code === 'Digit1' || code === 'Numpad1') && player.skills['1'].cd <= 0) {
+                let angle = Math.atan2(worldMouseY - player.y, worldMouseX - player.x);
                 projectiles.push({
                     x: player.x, y: player.y,
-                    vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8,
-                    r: 8, color: '#00ffff', isPlayerShot: true, dmg: 70, range: 400, dist: 0
+                    vx: Math.cos(angle) * 9, vy: Math.sin(angle) * 9,
+                    r: 9, color: '#00ffff', dmg: 85 + (player.level * 10), range: 450, dist: 0
                 });
-                player.skills.Q.cd = player.skills.Q.maxCd;
+                player.skills['1'].cd = player.skills['1'].maxCd * cdr;
                 addParticles(player.x, player.y, '#00ffff', 8);
             }
-            else if (code === 'KeyW' && player.skills.W.cd <= 0) {
-                // Skill W: Dash forward
-                let angle = Math.atan2(mouseY - player.y, mouseX - player.x);
-                player.x += Math.cos(angle) * 120;
-                player.y += Math.sin(angle) * 120;
-                player.x = Math.max(20, Math.min(780, player.x));
-                player.y = Math.max(20, Math.min(580, player.y));
-                player.skills.W.cd = player.skills.W.maxCd;
-                addParticles(player.x, player.y, '#38ef7d', 12);
+            else if ((key === '2' || code === 'Digit2' || code === 'Numpad2') && player.skills['2'].cd <= 0) {
+                let angle = Math.atan2(worldMouseY - player.y, worldMouseX - player.x);
+                player.x += Math.cos(angle) * 140;
+                player.y += Math.sin(angle) * 140;
+                player.x = Math.max(30, Math.min(MAP_W - 30, player.x));
+                player.y = Math.max(30, Math.min(MAP_H - 30, player.y));
+                player.skills['2'].cd = player.skills['2'].maxCd * cdr;
+                addParticles(player.x, player.y, '#38ef7d', 14);
             }
-            else if (code === 'KeyE' && player.skills.E.cd <= 0) {
-                // Skill E: Heal & Shield
-                player.hp = Math.min(player.maxHp, player.hp + 100);
-                addFloatText(player.x, player.y - 15, '+100 HP', '#2ed573');
-                player.skills.E.cd = player.skills.E.maxCd;
+            else if ((key === '3' || code === 'Digit3' || code === 'Numpad3') && player.skills['3'].cd <= 0) {
+                player.hp = Math.min(player.maxHp, player.hp + 120);
+                player.shield += 80;
+                addFloatText(player.x, player.y - 15, '+120 HP', '#2ed573');
+                player.skills['3'].cd = player.skills['3'].maxCd * cdr;
                 addParticles(player.x, player.y, '#2ed573', 15);
             }
-            else if (code === 'KeyR' && player.skills.R.cd <= 0) {
-                // Skill R: Ultimate AoE explosion
-                addParticles(player.x, player.y, '#ffa500', 35);
-                // Damage all red minions & turrets nearby
-                [...redMinions, ...redStructures].forEach(target => {
-                    if (target.hp > 0 && Math.hypot(target.x - player.x, target.y - player.y) < 180) {
-                        target.hp -= 150;
-                        addFloatText(target.x, target.y, '-150', '#ffa500');
-                        if (target.hp <= 0 && target.isMinion) killMinion(target, true);
+            else if ((key === '4' || code === 'Digit4' || code === 'Numpad4') && player.skills['4'].cd <= 0) {
+                addParticles(player.x, player.y, '#ffa500', 40);
+                let targets = [...redMinions, ...redTurrets, ...jungleMonsters];
+                targets.forEach(t => {
+                    if (t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) < 220) {
+                        damageTarget(t, 180 + (player.level * 20));
+                        if (t.type) triggerAgro(t, player);
                     }
                 });
-                player.skills.R.cd = player.skills.R.maxCd;
+                player.skills['4'].cd = player.skills['4'].maxCd * cdr;
             }
         }
 
-        // Minion Spawner System
-        let waveTimer = 0;
+        function triggerAgro(m, attacker) {
+            if (m.state !== 'dead') {
+                m.target = attacker;
+                m.state = 'chasing';
+            }
+        }
+
+        function damageTarget(target, dmg) {
+            let actualDmg = dmg;
+            if (player.redBuffTimer > 0) {
+                actualDmg += 20;
+                addFloatText(target.x, target.y - 10, '+20 Burn', '#ff4757');
+            }
+            target.hp -= actualDmg;
+            addFloatText(target.x, target.y, `-${Math.round(actualDmg)}`, '#ffffff');
+        }
+
         function spawnWave() {
-            // Spawn Top, Mid, Bot minions for both Blue and Red
             const paths = [
-                { blueTarget: {x: 100, y: 120}, finalTarget: {x: 700, y: 100} }, // Top
-                { blueTarget: {x: 400, y: 300}, finalTarget: {x: 700, y: 100} }, // Mid
-                { blueTarget: {x: 700, y: 500}, finalTarget: {x: 700, y: 100} }  // Bot
+                { target: {x: 250, y: 250}, final: {x: 1750, y: 250} },
+                { target: {x: 1000, y: 1000}, final: {x: 1750, y: 250} },
+                { target: {x: 1750, y: 1750}, final: {x: 1750, y: 250} }
             ];
 
             paths.forEach(p => {
                 blueMinions.push({
-                    x: 100, y: 500, hp: 120, maxHp: 120, r: 8, color: '#38ef7d', speed: 1.5,
-                    target: p.blueTarget, finalTarget: p.finalTarget, isMinion: true, isBlue: true
+                    x: 250, y: 1750, hp: 150, maxHp: 150, r: 8, color: '#38ef7d', speed: 1.8,
+                    target: p.target, finalTarget: p.final, isBlue: true
                 });
                 redMinions.push({
-                    x: 700, y: 100, hp: 120, maxHp: 120, r: 8, color: '#ff4757', speed: 1.5,
-                    target: p.blueTarget, finalTarget: {x: 100, y: 500}, isMinion: true, isBlue: false
+                    x: 1750, y: 250, hp: 150, maxHp: 150, r: 8, color: '#ff4757', speed: 1.8,
+                    target: p.target, finalTarget: {x: 250, y: 1750}, isBlue: false
                 });
             });
         }
 
-        // Particle FX
-        function addParticles(x, y, color, count) {
-            for (let i = 0; i < count; i++) {
-                let ang = Math.random() * Math.PI * 2;
-                let spd = Math.random() * 4 + 1;
-                particles.push({
-                    x, y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
-                    life: 20, color, r: Math.random() * 3 + 2
-                });
-            }
+        function triggerAnnouncement(text) {
+            const box = document.getElementById('announceBox');
+            box.innerText = text;
+            box.style.opacity = '1';
+            setTimeout(() => { box.style.opacity = '0'; }, 3000);
         }
 
-        // Floating Text FX
-        function addFloatText(x, y, text, color) {
-            floatTexts.push({ x, y, text, color, life: 30 });
-        }
+        function killJungleMonster(m) {
+            m.hp = 0;
+            m.state = 'dead';
+            m.respawnTimer = 60;
 
-        function killMinion(m, killedByPlayer) {
-            if (killedByPlayer) {
-                player.gold += 35;
-                player.exp += 25;
-                killCount++;
-                addFloatText(m.x, m.y, '+35G', '#ffa500');
-                checkLevelUp();
-                updateUI();
+            player.gold += 60;
+            player.exp += 45;
+            checkLevelUp();
+
+            if (m.type === 'redBuff') {
+                player.redBuffTimer = 60;
+                triggerAnnouncement('BẠN ĐÃ NHẬN BÙA ĐỎ!');
+            } else if (m.type === 'blueBuff') {
+                player.blueBuffTimer = 60;
+                triggerAnnouncement('BẠN ĐÃ NHẬN BÙA XANH!');
+            } else if (m.type === 'turtle') {
+                player.shield += 250;
+                player.gold += 150;
+                triggerAnnouncement('TOÀN ĐỘI TIÊU DIỆT RÙA!');
+            } else if (m.type === 'lord') {
+                triggerAnnouncement('ĐỘI BẠN ĐÃ TIÊU DIỆT LORD!');
+                alliedLord = {
+                    x: 250, y: 1750, hp: 2000, maxHp: 2000, r: 26, color: '#a855f7', speed: 1.4,
+                    target: {x: 1000, y: 1000}, finalTarget: {x: 1750, y: 250}
+                };
             }
-            addParticles(m.x, m.y, m.color, 10);
+            updateUI();
         }
 
         function checkLevelUp() {
@@ -418,280 +464,375 @@
                 player.level++;
                 player.exp -= player.nextExp;
                 player.nextExp = Math.floor(player.nextExp * 1.4);
-                player.maxHp += 50;
+                player.maxHp += 60;
                 player.hp = player.maxHp;
-                player.atkDmg += 8;
+                player.atkDmg += 10;
                 addFloatText(player.x, player.y - 25, 'LEVEL UP!', '#00d2ff');
             }
+        }
+
+        function addParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                let ang = Math.random() * Math.PI * 2;
+                let spd = Math.random() * 4 + 1;
+                particles.push({ x, y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, life: 18, color, r: 3 });
+            }
+        }
+
+        function addFloatText(x, y, text, color) {
+            floatTexts.push({ x, y, text, color, life: 28 });
         }
 
         function updateUI() {
             document.getElementById('goldVal').innerText = player.gold;
             document.getElementById('levelVal').innerText = player.level;
-            document.getElementById('expVal').innerText = player.exp;
             document.getElementById('killVal').innerText = killCount;
+
+            let mins = Math.floor(gameTime / 60).toString().padStart(2, '0');
+            let secs = Math.floor(gameTime % 60).toString().padStart(2, '0');
+            document.getElementById('timeVal').innerText = `${mins}:${secs}`;
+
+            document.getElementById('buffRedIcon').style.display = player.redBuffTimer > 0 ? 'flex' : 'none';
+            document.getElementById('redTimer').innerText = Math.ceil(player.redBuffTimer);
+
+            document.getElementById('buffBlueIcon').style.display = player.blueBuffTimer > 0 ? 'flex' : 'none';
+            document.getElementById('blueTimer').innerText = Math.ceil(player.blueBuffTimer);
+
+            document.getElementById('buffTurtleIcon').style.display = player.shield > 0 ? 'flex' : 'none';
         }
 
-        // Main Game Loop Update
+        let frameCount = 0;
         function update() {
             if (isGameOver) return;
+            frameCount++;
+            if (frameCount % 60 === 0) {
+                gameTime++;
+                if (player.redBuffTimer > 0) player.redBuffTimer--;
+                if (player.blueBuffTimer > 0) player.blueBuffTimer--;
+                
+                if (gameTime === 300) {
+                    let boss = jungleMonsters.find(m => m.id === 'boss');
+                    if (boss) {
+                        boss.type = 'lord';
+                        boss.color = '#a855f7';
+                        boss.hp = boss.maxHp = 2500;
+                        triggerAnnouncement('LORD ĐÃ XUẤT HIỆN!');
+                    }
+                }
+                updateUI();
+            }
 
-            // Player Movement
             if (keys['KeyW'] || keys['ArrowUp']) player.y -= player.speed;
             if (keys['KeyS'] || keys['ArrowDown']) player.y += player.speed;
             if (keys['KeyA'] || keys['ArrowLeft']) player.x -= player.speed;
             if (keys['KeyD'] || keys['ArrowRight']) player.x += player.speed;
 
-            player.x = Math.max(15, Math.min(785, player.x));
-            player.y = Math.max(15, Math.min(585, player.y));
+            player.x = Math.max(20, Math.min(MAP_W - 20, player.x));
+            player.y = Math.max(20, Math.min(MAP_H - 20, player.y));
 
-            // Basic Attack (Spacebar)
+            camX = Math.max(0, Math.min(MAP_W - canvas.width, player.x - canvas.width / 2));
+            camY = Math.max(0, Math.min(MAP_H - canvas.height, player.y - canvas.height / 2));
+
             if (keys['Space']) {
-                let targets = [...redMinions, ...redStructures].filter(t => t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) <= player.atkRange);
+                let targets = [...redMinions, ...redTurrets, ...jungleMonsters].filter(t => t.hp > 0 && Math.hypot(t.x - player.x, t.y - player.y) <= player.atkRange);
                 if (targets.length > 0) {
-                    let closest = targets.reduce((prev, curr) => 
-                        Math.hypot(curr.x - player.x, curr.y - player.y) < Math.hypot(prev.x - player.x, prev.y - player.y) ? curr : prev
-                    );
-                    closest.hp -= player.atkDmg * 0.1;
-                    addParticles(closest.x, closest.y, '#ffffff', 1);
-                    if (closest.hp <= 0 && closest.isMinion) {
-                        killMinion(closest, true);
+                    let closest = targets.reduce((p, c) => Math.hypot(c.x - player.x, c.y - player.y) < Math.hypot(p.x - player.x, p.y - player.y) ? c : p);
+                    damageTarget(closest, player.atkDmg * 0.1);
+                    if (closest.type) triggerAgro(closest, player);
+                    if (closest.hp <= 0) {
+                        if (closest.type) killJungleMonster(closest);
+                        else { player.gold += 35; player.exp += 20; killCount++; updateUI(); }
                     }
                 }
             }
 
-            // Cooldown Timers Update
-            ['Q', 'W', 'E', 'R'].forEach(k => {
+            ['1', '2', '3', '4'].forEach(k => {
                 if (player.skills[k].cd > 0) {
                     player.skills[k].cd -= 1/60;
                     let el = document.getElementById(`cd-${k}`);
-                    el.style.display = 'flex';
-                    el.innerText = Math.ceil(player.skills[k].cd);
+                    if (el) {
+                        el.style.display = 'flex';
+                        el.innerText = Math.ceil(player.skills[k].cd);
+                    }
                 } else {
-                    document.getElementById(`cd-${k}`).style.display = 'none';
+                    let el = document.getElementById(`cd-${k}`);
+                    if (el) el.style.display = 'none';
                 }
             });
 
-            // Wave Spawning
-            waveTimer++;
-            if (waveTimer % 700 === 0) {
-                spawnWave();
-            }
+            if (frameCount % 650 === 0) spawnWave();
 
-            // Minions AI Movement & Combat
-            [blueMinions, redMinions].forEach((team, isRedTeam) => {
+            jungleMonsters.forEach(m => {
+                if (m.state === 'dead') {
+                    m.respawnTimer -= 1/60;
+                    if (m.respawnTimer <= 0) {
+                        m.hp = m.maxHp;
+                        m.x = m.homeX; m.y = m.homeY;
+                        m.state = 'idle';
+                    }
+                    return;
+                }
+
+                if (m.state === 'chasing' && m.target) {
+                    let distToHome = Math.hypot(m.x - m.homeX, m.y - m.homeY);
+                    if (distToHome > m.leashR) {
+                        m.state = 'returning';
+                        m.target = null;
+                    } else {
+                        let distToTarget = Math.hypot(m.target.x - m.x, m.target.y - m.y);
+                        if (distToTarget < 40) {
+                            if (player.shield > 0) player.shield -= 0.8;
+                            else player.hp -= 0.8;
+                            if (player.hp <= 0) endGame(false);
+                        } else {
+                            let angle = Math.atan2(m.target.y - m.y, m.target.x - m.x);
+                            m.x += Math.cos(angle) * 2;
+                            m.y += Math.sin(angle) * 2;
+                        }
+                    }
+                } else if (m.state === 'returning') {
+                    let angle = Math.atan2(m.homeY - m.y, m.homeX - m.x);
+                    m.x += Math.cos(angle) * 5;
+                    m.y += Math.sin(angle) * 5;
+                    m.hp = Math.min(m.maxHp, m.hp + m.maxHp * 0.05);
+
+                    if (Math.hypot(m.x - m.homeX, m.y - m.homeY) < 5) {
+                        m.x = m.homeX; m.y = m.homeY;
+                        m.hp = m.maxHp;
+                        m.state = 'idle';
+                    }
+                }
+            });
+
+            [blueMinions, redMinions].forEach((team, isRed) => {
                 team.forEach(m => {
                     if (m.hp <= 0) return;
-                    let enemies = isRedTeam ? [...blueMinions, player] : [...redMinions, ...redStructures];
-                    let nearbyEnemies = enemies.filter(e => e.hp > 0 && Math.hypot(e.x - m.x, e.y - m.y) < 90);
+                    let enemies = isRed ? [...blueMinions, player] : [...redMinions, ...redTurrets];
+                    if (alliedLord && isRed) enemies.push(alliedLord);
 
-                    if (nearbyEnemies.length > 0) {
-                        let target = nearbyEnemies[0];
-                        target.hp -= 0.6;
-                        if (target.hp <= 0 && target === player) {
-                            // Player Death / Defeat condition
-                            player.hp = 0;
-                            endGame(false);
-                        }
+                    let nearby = enemies.filter(e => e.hp > 0 && Math.hypot(e.x - m.x, e.y - m.y) < 80);
+                    if (nearby.length > 0) {
+                        nearby[0].hp -= 0.5;
+                        if (nearby[0] === player && player.hp <= 0) endGame(false);
                     } else {
-                        // Move along path
-                        let distToTarget = Math.hypot(m.target.x - m.x, m.target.y - m.y);
-                        let currTarget = distToTarget < 20 ? m.finalTarget : m.target;
-                        let angle = Math.atan2(currTarget.y - m.y, currTarget.x - m.x);
+                        let dist = Math.hypot(m.target.x - m.x, m.target.y - m.y);
+                        let curr = dist < 30 ? m.finalTarget : m.target;
+                        let angle = Math.atan2(curr.y - m.y, curr.x - m.x);
                         m.x += Math.cos(angle) * m.speed;
                         m.y += Math.sin(angle) * m.speed;
                     }
                 });
             });
 
-            // Clean dead minions
-            blueMinions = blueMinions.filter(m => m.hp > 0);
-            redMinions = redMinions.filter(m => m.hp > 0);
+            if (alliedLord && alliedLord.hp > 0) {
+                let targets = [...redMinions, ...redTurrets].filter(e => e.hp > 0 && Math.hypot(e.x - alliedLord.x, e.y - alliedLord.y) < 120);
+                if (targets.length > 0) {
+                    targets[0].hp -= 2.5;
+                } else {
+                    let dist = Math.hypot(alliedLord.target.x - alliedLord.x, alliedLord.target.y - alliedLord.y);
+                    let curr = dist < 40 ? alliedLord.finalTarget : alliedLord.target;
+                    let angle = Math.atan2(curr.y - alliedLord.y, curr.x - alliedLord.x);
+                    alliedLord.x += Math.cos(angle) * alliedLord.speed;
+                    alliedLord.y += Math.sin(angle) * alliedLord.speed;
+                }
+            }
 
-            // Red Structures Attack AI
-            redStructures.forEach(s => {
+            redTurrets.forEach(s => {
                 if (s.hp <= 0) return;
-                let targets = [...blueMinions, player].filter(u => u.hp > 0 && Math.hypot(u.x - s.x, u.y - s.y) < 140);
+                let targets = [...blueMinions, player].filter(u => u.hp > 0 && Math.hypot(u.x - s.x, u.y - s.y) < 160);
+                if (alliedLord && Math.hypot(alliedLord.x - s.x, alliedLord.y - s.y) < 160) targets.unshift(alliedLord);
+
                 if (targets.length > 0) {
                     let target = targets[0];
-                    target.hp -= 1.2;
-                    if (Math.random() < 0.2) addParticles(target.x, target.y, '#ff4757', 2);
+                    if (target === player && player.shield > 0) player.shield -= 1.5;
+                    else target.hp -= 1.5;
                     if (target === player && player.hp <= 0) endGame(false);
                 }
             });
 
-            // Check Nexus Defeat/Victory
-            let redNexus = redStructures.find(s => s.isNexus);
-            if (redNexus && redNexus.hp <= 0) {
-                endGame(true);
-            }
+            let nexus = redTurrets.find(s => s.isNexus);
+            if (nexus && nexus.hp <= 0) endGame(true);
 
-            // Update Projectiles
             projectiles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.dist += Math.hypot(p.vx, p.vy);
-
-                [...redMinions, ...redStructures].forEach(target => {
-                    if (target.hp > 0 && Math.hypot(target.x - p.x, target.y - p.y) < target.r + p.r) {
-                        target.hp -= p.dmg;
-                        addFloatText(target.x, target.y, `-${p.dmg}`, '#00ffff');
-                        p.dist = 9999; // destroy projectile
-                        if (target.hp <= 0 && target.isMinion) killMinion(target, true);
+                p.x += p.vx; p.y += p.vy; p.dist += Math.hypot(p.vx, p.vy);
+                [...redMinions, ...redTurrets, ...jungleMonsters].forEach(t => {
+                    if (t.hp > 0 && Math.hypot(t.x - p.x, t.y - p.y) < (t.r || 15) + p.r) {
+                        damageTarget(t, p.dmg);
+                        if (t.type) triggerAgro(t, player);
+                        p.dist = 9999;
+                        if (t.hp <= 0 && t.type) killJungleMonster(t);
                     }
                 });
             });
             projectiles = projectiles.filter(p => p.dist < p.range);
 
-            // Particles Update
-            particles.forEach(pt => {
-                pt.x += pt.vx;
-                pt.y += pt.vy;
-                pt.life--;
-            });
+            blueMinions = blueMinions.filter(m => m.hp > 0);
+            redMinions = redMinions.filter(m => m.hp > 0);
+            particles.forEach(pt => { pt.x += pt.vx; pt.y += pt.vy; pt.life--; });
             particles = particles.filter(pt => pt.life > 0);
-
-            // Float Texts Update
-            floatTexts.forEach(ft => {
-                ft.y -= 0.5;
-                ft.life--;
-            });
+            floatTexts.forEach(ft => { ft.y -= 0.5; ft.life--; });
             floatTexts = floatTexts.filter(ft => ft.life > 0);
         }
 
-        // Render Graphics
         function drawMap() {
-            // Map Lanes
+            ctx.fillStyle = '#18331b';
+            ctx.fillRect(-camX, -camY, MAP_W, MAP_H);
+
             ctx.strokeStyle = '#2d5a32';
-            ctx.lineWidth = 40;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            ctx.lineWidth = 90; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
-            // Top, Mid, Bot lanes paths
-            ctx.beginPath(); ctx.moveTo(100, 500); ctx.lineTo(100, 120); ctx.lineTo(700, 100); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(100, 500); ctx.lineTo(700, 100); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(100, 500); ctx.lineTo(700, 500); ctx.lineTo(700, 100); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(250 - camX, 1750 - camY); ctx.lineTo(250 - camX, 250 - camY); ctx.lineTo(1750 - camX, 250 - camY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(250 - camX, 1750 - camY); ctx.lineTo(1750 - camX, 250 - camY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(250 - camX, 1750 - camY); ctx.lineTo(1750 - camX, 1750 - camY); ctx.lineTo(1750 - camX, 250 - camY); ctx.stroke();
 
-            // River in middle diagonal
-            ctx.strokeStyle = '#1e3799';
-            ctx.lineWidth = 25;
-            ctx.beginPath(); ctx.moveTo(200, 600); ctx.lineTo(800, 0); ctx.stroke();
+            ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 110;
+            ctx.beginPath(); ctx.moveTo(0 - camX, 2000 - camY); ctx.lineTo(2000 - camX, 0 - camY); ctx.stroke();
 
-            // Bases Areas
-            ctx.fillStyle = 'rgba(0, 210, 255, 0.2)'; ctx.fillRect(40, 440, 120, 120);
-            ctx.fillStyle = 'rgba(255, 71, 87, 0.2)'; ctx.fillRect(640, 40, 120, 120);
+            ctx.fillStyle = 'rgba(0, 210, 255, 0.25)'; ctx.fillRect(50 - camX, 1550 - camY, 400, 400);
+            ctx.fillStyle = 'rgba(255, 71, 87, 0.25)'; ctx.fillRect(1550 - camX, 50 - camY, 400, 400);
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawMap();
 
-            // Draw Structures
-            redStructures.forEach(s => {
-                if (s.hp > 0) {
+            jungleMonsters.forEach(m => {
+                if (m.state !== 'dead') {
                     ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.fillStyle = s.isNexus ? '#ff3838' : '#e15f41';
-                    ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.arc(m.x - camX, m.y - camY, m.r, 0, Math.PI * 2);
+                    ctx.fillStyle = m.color; ctx.fill();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
 
-                    // HP Bar
-                    ctx.fillStyle = '#000'; ctx.fillRect(s.x - 20, s.y - s.r - 12, 40, 6);
-                    ctx.fillStyle = '#ff4757'; ctx.fillRect(s.x - 20, s.y - s.r - 12, (s.hp / s.maxHp) * 40, 6);
+                    ctx.fillStyle = '#000'; ctx.fillRect(m.x - camX - 20, m.y - camY - m.r - 10, 40, 5);
+                    ctx.fillStyle = '#2ed573'; ctx.fillRect(m.x - camX - 20, m.y - camY - m.r - 10, (m.hp / m.maxHp) * 40, 5);
                 }
             });
 
-            // Draw Minions
-            [...blueMinions, ...redMinions].forEach(m => {
-                ctx.beginPath();
-                ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-                ctx.fillStyle = m.color; ctx.fill();
-                
-                // Health Bar
-                ctx.fillStyle = '#000'; ctx.fillRect(m.x - 10, m.y - 12, 20, 3);
-                ctx.fillStyle = m.isBlue ? '#2ed573' : '#ff4757'; ctx.fillRect(m.x - 10, m.y - 12, (m.hp / m.maxHp) * 20, 3);
+            redTurrets.forEach(s => {
+                if (s.hp > 0) {
+                    ctx.beginPath();
+                    ctx.arc(s.x - camX, s.y - camY, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = s.isNexus ? '#ff2056' : '#e15f41'; ctx.fill();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+                    ctx.fillStyle = '#000'; ctx.fillRect(s.x - camX - 22, s.y - camY - s.r - 12, 44, 6);
+                    ctx.fillStyle = '#ff4757'; ctx.fillRect(s.x - camX - 22, s.y - camY - s.r - 12, (s.hp / s.maxHp) * 44, 6);
+                }
             });
 
-            // Draw Projectiles
+            [...blueMinions, ...redMinions].forEach(m => {
+                ctx.beginPath();
+                ctx.arc(m.x - camX, m.y - camY, m.r, 0, Math.PI * 2);
+                ctx.fillStyle = m.color; ctx.fill();
+            });
+
+            if (alliedLord && alliedLord.hp > 0) {
+                ctx.beginPath();
+                ctx.arc(alliedLord.x - camX, alliedLord.y - camY, alliedLord.r, 0, Math.PI * 2);
+                ctx.fillStyle = alliedLord.color; ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+            }
+
             projectiles.forEach(p => {
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.arc(p.x - camX, p.y - camY, p.r, 0, Math.PI * 2);
                 ctx.fillStyle = p.color; ctx.fill();
             });
 
-            // Draw Player Champion
             if (player.hp > 0) {
+                if (player.redBuffTimer > 0) {
+                    ctx.beginPath(); ctx.arc(player.x - camX, player.y - camY, player.radius + 6, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ff4757'; ctx.lineWidth = 3; ctx.stroke();
+                }
+                if (player.blueBuffTimer > 0) {
+                    ctx.beginPath(); ctx.arc(player.x - camX, player.y - camY, player.radius + 10, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 3; ctx.stroke();
+                }
+
                 ctx.beginPath();
-                ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+                ctx.arc(player.x - camX, player.y - camY, player.radius, 0, Math.PI * 2);
                 ctx.fillStyle = player.color; ctx.fill();
                 ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
 
-                // Player Attack Range Outline
-                ctx.beginPath();
-                ctx.arc(player.x, player.y, player.atkRange, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(0, 210, 255, 0.15)'; ctx.lineWidth = 1; ctx.stroke();
-
-                // Health & Mana Bar
-                ctx.fillStyle = '#000'; ctx.fillRect(player.x - 22, player.y - 25, 44, 6);
-                ctx.fillStyle = '#2ed573'; ctx.fillRect(player.x - 22, player.y - 25, (player.hp / player.maxHp) * 44, 6);
+                ctx.fillStyle = '#000'; ctx.fillRect(player.x - camX - 22, player.y - camY - 26, 44, 6);
+                ctx.fillStyle = '#2ed573'; ctx.fillRect(player.x - camX - 22, player.y - camY - 26, (player.hp / player.maxHp) * 44, 6);
+                if (player.shield > 0) {
+                    ctx.fillStyle = '#eccc68'; ctx.fillRect(player.x - camX - 22, player.y - camY - 26, Math.min(44, (player.shield / 250) * 44), 6);
+                }
             }
 
-            // Particles
             particles.forEach(pt => {
-                ctx.beginPath();
-                ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(pt.x - camX, pt.y - camY, pt.r, 0, Math.PI * 2);
                 ctx.fillStyle = pt.color; ctx.fill();
             });
 
-            // Floating Text
             floatTexts.forEach(ft => {
-                ctx.fillStyle = ft.color;
-                ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(ft.text, ft.x - 10, ft.y);
+                ctx.fillStyle = ft.color; ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(ft.text, ft.x - camX - 10, ft.y - camY);
             });
+
+            drawMinimap();
+        }
+
+        function drawMinimap() {
+            miniCtx.clearRect(0, 0, 150, 150);
+            let scale = 150 / MAP_W;
+
+            miniCtx.fillStyle = '#0f2313'; miniCtx.fillRect(0, 0, 150, 150);
+            miniCtx.strokeStyle = '#2d5a32'; miniCtx.lineWidth = 4;
+            miniCtx.beginPath(); miniCtx.moveTo(20, 130); miniCtx.lineTo(20, 20); miniCtx.lineTo(130, 20); miniCtx.stroke();
+            miniCtx.beginPath(); miniCtx.moveTo(20, 130); miniCtx.lineTo(130, 20); miniCtx.stroke();
+            miniCtx.beginPath(); miniCtx.moveTo(20, 130); miniCtx.lineTo(130, 130); miniCtx.lineTo(130, 20); miniCtx.stroke();
+
+            redTurrets.forEach(s => {
+                if (s.hp > 0) {
+                    miniCtx.fillStyle = '#ff4757';
+                    miniCtx.fillRect(s.x * scale - 2, s.y * scale - 2, 5, 5);
+                }
+            });
+
+            jungleMonsters.forEach(m => {
+                if (m.state !== 'dead') {
+                    miniCtx.fillStyle = m.color;
+                    miniCtx.beginPath(); miniCtx.arc(m.x * scale, m.y * scale, 3, 0, Math.PI * 2); miniCtx.fill();
+                }
+            });
+
+            miniCtx.fillStyle = '#00d2ff';
+            miniCtx.beginPath(); miniCtx.arc(player.x * scale, player.y * scale, 4, 0, Math.PI * 2); miniCtx.fill();
+
+            miniCtx.strokeStyle = '#ffffff'; miniCtx.lineWidth = 1;
+            miniCtx.strokeRect(camX * scale, camY * scale, canvas.width * scale, canvas.height * scale);
         }
 
         function endGame(victory) {
             isGameOver = true;
             const modal = document.getElementById('endModal');
-            const title = document.getElementById('modalTitle');
-            const desc = document.getElementById('modalDesc');
-
             modal.style.display = 'flex';
             if (victory) {
                 modal.className = 'modal victory';
-                title.innerText = 'VICTORY!';
-                desc.innerText = 'Chúc mừng! Bạn đã tiêu diệt Nhà Chính đối phương!';
+                document.getElementById('modalTitle').innerText = 'VICTORY!';
             } else {
                 modal.className = 'modal defeat';
-                title.innerText = 'DEFEAT!';
-                desc.innerText = 'Bạn hoặc căn cứ của bạn đã bị tiêu diệt!';
+                document.getElementById('modalTitle').innerText = 'DEFEAT!';
             }
         }
 
         function restartGame() {
             document.getElementById('endModal').style.display = 'none';
-            isGameOver = false;
-            killCount = 0;
-            player.x = 100; player.y = 500;
-            player.hp = player.maxHp;
-            player.gold = 300; player.level = 1; player.exp = 0;
-            redStructures.forEach(s => s.hp = s.maxHp);
-            blueMinions = []; redMinions = []; projectiles = [];
-            spawnWave();
-            updateUI();
+            isGameOver = false; killCount = 0; gameTime = 0;
+            player.x = 250; player.y = 1750; player.hp = player.maxHp; player.gold = 300;
+            redTurrets.forEach(s => s.hp = s.maxHp);
+            jungleMonsters.forEach(m => { m.hp = m.maxHp; m.state = 'idle'; });
+            blueMinions = []; redMinions = []; alliedLord = null;
+            spawnWave(); updateUI();
         }
 
-        // Initialize First Wave
         spawnWave();
-
-        // Game Loop
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
+        function loop() { update(); draw(); requestAnimationFrame(loop); }
         loop();
     </script>
 </body>
 </html>
+
+```
